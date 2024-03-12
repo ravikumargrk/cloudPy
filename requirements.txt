@@ -1,1 +1,1 @@
-flask-restful=0.3.10
+flask-restful
