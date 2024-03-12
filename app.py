@@ -38,7 +38,7 @@ class root(Resource):
         args = request.get_json()
         if check(args):
             if ((USER == args['username']) and (PASS == args['password'])):
-                return run(args['code'], args['stdin'])
+                return run(args['code'], args['input'])
             else:
                 return {"log": "invalid auth"}
         else:
