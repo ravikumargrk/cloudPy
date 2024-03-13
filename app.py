@@ -8,21 +8,24 @@ import os
 USER = os.environ.get('USER')
 PASS = os.environ.get('PASS')
 
+import subprocess
+def write(filename, s):
+    f = open(filename, "w")
+    f.write(s)
+    f.close()
+
 def run(code, stdin):
-    f = open("foo.py", "w")
-    f.write(code)
-    f.close()
-
-    f = open("in.txt", "w")
-    f.write(stdin)
-    f.close()
-
-    os.system("python foo.py < in.txt > out.txt")
-
-    f = open("out.txt", "r")
-    stdout = f.read()
-    f.close()
-    return stdout
+    write("foo.py", code)
+    write("in.txt", stdin)
+    inputStream = open("in.txt", "r")
+    result = subprocess.run(
+        ['python', 'foo.py'],
+        stdin = inputStream,
+        stdout = subprocess.PIPE,
+        stderr = subprocess.PIPE,
+        universal_newlines = True 
+    )
+    return {"output": result.stdout, "log": result.stderr}
 
 def check(body):
     keys = ['code', 'username', 'password', 'input']
@@ -38,11 +41,11 @@ class root(Resource):
         args = request.get_json()
         if check(args):
             if ((USER == args['username']) and (PASS == args['password'])):
-                return {"output": run(args['code'], args['input'])}
+                return run(args['code'], args['input'])
             else:
-                return {"log": "invalid auth"}
+                return {"log": "invalid auth", "output": ""}
         else:
-            return {"log":"invalid payload"}
+            return {"log":"invalid payload", "output": ""}
 
 api.add_resource(root, '/')
 
