@@ -11,18 +11,24 @@ from io import StringIO
 import subprocess
 
 class cloudRun(Resource):
-    
+    def get(self):
+        reqAuth = request.headers.get('Authorization')
+        if auth!=reqAuth:
+            return Response('Unauthorised', mimetype='text/csv', status=401)
+        else:
+            return Response('Authorised', mimetype='text/csv', status=200)
+            
     def post(self):
         reqAuth = request.headers.get('Authorization')
         if auth!=reqAuth:
-            return {'log': 'unauthorised', 'output': ''}
+            return Response('Unauthorised', mimetype='text/csv', status=401)
         
         # read contents
         data = {name: content for (name, content) in request.files.items()}
         
         # save code to local
         if 'code' not in data:
-            return {'log': 'required code file.'}
+            return Response('Required code file', mimetype='text/csv', status=201)
         else:
             data['code'].save('code')
         
