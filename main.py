@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Response
 from flask_restful import Resource, Api, request
 app = Flask(__name__)
 api = Api(app)
@@ -42,8 +42,16 @@ class cloudRun(Resource):
         )
         if 'code' in os.listdir():
             os.remove('code')
-        return {"output": result.stdout, "log": result.stderr}
-
+        # response
+        if len(result.stderr):
+            r = result.stderr
+        else:
+            r = result.stdout
+        return Response(
+                r,
+                mimetype='text/csv'
+            )
+        
 api.add_resource(cloudRun, '/')
 
 if __name__ == '__main__':
