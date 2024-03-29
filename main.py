@@ -26,14 +26,15 @@ class cloudRun(Resource):
         # read contents
         data = {name: content for (name, content) in request.files.items()}
         
+        # check for main.py
+        if 'main.py' not in data:
+            return Response('Required main.py file', mimetype='text/csv', status=201)
+
         # save code to local
         for name in data:
             if name != 'stdin':
                 data[name].save(name)
-        
-        if 'main.py' not in data:
-            return Response('Required main.py file', mimetype='text/csv', status=201)
-        
+                
         # set input stream
         if 'stdin' not in data:
             in_fp = StringIO('')
