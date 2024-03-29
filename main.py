@@ -44,7 +44,7 @@ class cloudRun(Resource):
         # run process
         result = subprocess.run(
             ['python', 'main.py'],
-            stdin = in_fp,
+            input=in_fp,
             text=True,  # Set text to True
             stdout = subprocess.PIPE,
             stderr = subprocess.PIPE,
