@@ -27,10 +27,12 @@ class cloudRun(Resource):
         data = {name: content for (name, content) in request.files.items()}
         
         # save code to local
-        if 'code' not in data:
-            return Response('Required code file', mimetype='text/csv', status=201)
-        else:
-            data['code'].save('code')
+        for name in data:
+            if name != 'stdin':
+                data[name].save(name)
+        
+        if 'main.py' not in data:
+            return Response('Required main.py file', mimetype='text/csv', status=201)
         
         # set input stream
         if 'stdin' not in data:
@@ -40,14 +42,17 @@ class cloudRun(Resource):
 
         # run process
         result = subprocess.run(
-            ['python', 'code'],
+            ['python', 'main.py'],
             stdin = in_fp,
             stdout = subprocess.PIPE,
             stderr = subprocess.PIPE,
             universal_newlines = True 
         )
-        if 'code' in os.listdir():
-            os.remove('code')
+
+        for name in data:
+            if name in os.listdir():
+                os.remove(name)
+                
         # response
         if len(result.stderr):
             r = result.stderr
