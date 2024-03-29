@@ -37,14 +37,14 @@ class cloudRun(Resource):
                 
         # set input stream
         if 'stdin' not in data:
-            in_fp = ''
+            in_str = ''
         else:
-            in_fp = data['stdin'].read().decode('utf-8')
+            in_str = data['stdin'].read().decode('utf-8')
 
         # run process
         result = subprocess.run(
             ['python', 'main.py'],
-            input=in_fp,
+            input=in_str,
             text=True,  # Set text to True
             stdout = subprocess.PIPE,
             stderr = subprocess.PIPE,
@@ -54,10 +54,7 @@ class cloudRun(Resource):
         for name in data:
             if name in os.listdir():
                 os.remove(name)
-
-        if 'stdin' not in data:
-            in_fp.close()
-        
+                
         # response
         if len(result.stderr):
             r = result.stderr
