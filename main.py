@@ -37,7 +37,7 @@ class cloudRun(Resource):
                 
         # set input stream
         if 'stdin' not in data:
-            in_fp = StringIO('')
+            in_fp = open('stdin', 'w+')
         else:
             in_fp = data['stdin'].stream
 
@@ -53,7 +53,10 @@ class cloudRun(Resource):
         for name in data:
             if name in os.listdir():
                 os.remove(name)
-                
+
+        if 'stdin' not in data:
+            in_fp.close()
+        
         # response
         if len(result.stderr):
             r = result.stderr
