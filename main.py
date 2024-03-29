@@ -37,14 +37,15 @@ class cloudRun(Resource):
                 
         # set input stream
         if 'stdin' not in data:
-            in_fp = open('stdin', 'w+')
+            in_fp = ''
         else:
-            in_fp = data['stdin'].stream
+            in_fp = data['stdin'].read().decode('utf-8')
 
         # run process
         result = subprocess.run(
             ['python', 'main.py'],
             stdin = in_fp,
+            text=True,  # Set text to True
             stdout = subprocess.PIPE,
             stderr = subprocess.PIPE,
             universal_newlines = True 
